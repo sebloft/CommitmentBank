@@ -1,0 +1,19 @@
+{
+  "model": "Qwen/Qwen3-8B",
+  "input_json": "data/nli_prompt_json_low_agreement/test-00000-of-00001.json",
+  "num_examples": 250,
+  "num_with_gold": 250,
+  "accuracy": 0.312,
+  "unknown_prediction_count": 0,
+  "prediction_counts": {
+    "E": 55,
+    "N": 118,
+    "C": 77,
+    "UNKNOWN": 0
+  },
+  "max_new_tokens": 20,
+  "batch_size": 4,
+  "seed": 7,
+  "device": "cuda",
+  "predictions_file": "results/Qwen_Qwen3-8B/initial_eval/test/run1/predictions.json"
+}

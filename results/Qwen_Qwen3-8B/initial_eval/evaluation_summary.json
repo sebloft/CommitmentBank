@@ -1,0 +1,43 @@
+{
+  "model": "Qwen3-8B",
+  "num_examples": 250,
+  "num_with_gold": 250,
+  "accuracy": 0.864,
+  "macro_f1": 0.7223985890652558,
+  "micro_f1": 0.864,
+  "weighted_f1": 0.8525798941798941,
+  "correct_predictions": 216,
+  "per_class_metrics": {
+    "E": {
+      "precision": 0.9587628865979382,
+      "recall": 0.8230088495575221,
+      "f1": 0.8857142857142857,
+      "support": 113
+    },
+    "N": {
+      "precision": 1.0,
+      "recall": 0.25,
+      "f1": 0.4,
+      "support": 16
+    },
+    "C": {
+      "precision": 0.7986577181208053,
+      "recall": 0.9834710743801653,
+      "f1": 0.8814814814814815,
+      "support": 121
+    }
+  },
+  "label_distribution": {
+    "gold": {
+      "E": 113,
+      "N": 16,
+      "C": 121
+    },
+    "predictions": {
+      "E": 97,
+      "N": 4,
+      "C": 149
+    }
+  },
+  "predictions_file": "results/Qwen_Qwen3-8B/initial_eval/test/run1/predictions.json"
+}
