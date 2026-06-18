@@ -1,0 +1,6 @@
+transformers>=4.0.0
+torch
+scikit-learn
+pandas
+numpy
+joblib
