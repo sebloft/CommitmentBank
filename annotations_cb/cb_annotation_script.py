@@ -14,24 +14,38 @@ if not annotator_id:
     st.warning("Please enter your Annotator ID in the sidebar to start.")
     st.stop()
 
+# Reset session state if the annotator ID changed
+if st.session_state.get("current_annotator") != annotator_id:
+    st.session_state.current_annotator = annotator_id
+    if "data" in st.session_state:
+        del st.session_state.data
+    if "index" in st.session_state:
+        del st.session_state.index
+
 # Unique output filename per annotator
 OUTPUT_PATH = CURRENT_DIR / f"annotated_samples_{annotator_id}.csv"
 
-# 3. Load & Initialize Session State Data
+# 3. Load & Initialize Session State Data with Guaranteed Order
 if "data" not in st.session_state:
     if os.path.exists(OUTPUT_PATH):
         df = pd.read_csv(OUTPUT_PATH)
     else:
         df = pd.read_csv(FILE_PATH, header=None, names=["text"])
+        # Create an immutable ID based on the initial file order
+        df["sample_id"] = df.index
 
+    # Ensure required columns exist
+    if "sample_id" not in df.columns:
+        df["sample_id"] = df.index
     if "labels" not in df.columns:
         df["labels"] = None
     if "comments" not in df.columns:
         df["comments"] = None
 
-    st.session_state.data = df
+    # Enforce deterministic order and reset continuous 0-based index
+    df = df.sort_values(by="sample_id").reset_index(drop=True)
 
-total = len(st.session_state.data)
+    st.session_state.data = df
 
 # 4. Track current index
 if "index" not in st.session_state:
