@@ -5,6 +5,15 @@ import os
 FILE_PATH = "annotations_cb/commitmentbank_samples.csv"
 # In your sidebar:
 annotator_id = st.sidebar.text_input("Enter your Annotator ID / Name:").strip()
+# In the sidebar so annotators can download their progress anytime:
+csv_data = st.session_state.data.to_csv(index=False).encode('utf-8')
+
+st.sidebar.download_button(
+    label="📥 Download Progress CSV",
+    data=csv_data,
+    file_name=f"annotated_samples_{annotator_id}.csv",
+    mime="text/csv"
+)
 
 if not annotator_id:
     st.warning("Please enter your Annotator ID in the sidebar to start.")
@@ -108,8 +117,18 @@ if idx < total:
             st.rerun()
 
 else:
+    else:
     st.success("All samples processed!")
     st.dataframe(st.session_state.data)
+    
+    # Download final completed file
+    st.download_button(
+        label="📥 Download Completed CSV",
+        data=st.session_state.data.to_csv(index=False).encode('utf-8'),
+        file_name=f"completed_annotations_{annotator_id}.csv",
+        mime="text/csv",
+        type="primary"
+    )
     
     if st.button("Review from Start"):
         st.session_state.index = 0
