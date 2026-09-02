@@ -6,9 +6,9 @@ from collections import defaultdict
 # ==========================================
 # Configuration & File Paths
 # ==========================================
-PREDICTIONS_FILE = 'data/predictions_zai.jsonl'
-DATASET_FILE = 'data/CommitmentBank-items.csv'
-SUMMARY_FILE = 'data/evaluation_summary.json'
+PREDICTIONS_FILE = 'results/zai_cb_output_reason.jsonl'
+DATASET_FILE = 'data/CB/CommitmentBank-items.csv'
+SUMMARY_FILE = 'results/evaluation_summary_zai_reason.json'
 
 LABELS = ['entailment', 'neutral', 'contradiction']
 
@@ -52,11 +52,13 @@ def parse_responses(responses_str):
 
 def extract_prediction(text):
     text = text.lower()
-    if 'entailment' in text:
+    if '[PREDICTION]: ' in text:
+        text = text.split('[PREDICTION]: ')[1]
+    if 'e' in text:
         return 'entailment'
-    elif 'contradiction' in text:
+    elif 'c' in text:
         return 'contradiction'
-    elif 'neutral' in text:
+    elif 'n' in text:
         return 'neutral'
     return 'unknown'
 

@@ -60,21 +60,32 @@ def process_data(input_csv: Path, output_jsonl: Path, model: str, temp: float, r
     jsonl_output = []
     
     for idx, row in df.iterrows():
+        
         # Using .iloc on the row series forces positional indexing (0-indexed)
         # Based on your sample: 
         # Index 4 = Context/Premise
         # Index 5 = Hypothesis/Statement
         # Last index = Votes string
-        premise = row.iloc[4]
-        hypothesis = row.iloc[5]
+        premise = str(row.iloc[4]) + ' ' + str(row.iloc[5])
+        if premise.strip() == '':
+            print(f"Warning: Empty premise at row {idx}. Skipping.")
+            continue
+        hypothesis = row.iloc[6]
         votes_str = row.iloc[-1] 
-        
+        print(f"Processing row {idx}: Premise='{premise}', Hypothesis='{hypothesis}', Votes='{votes_str}'")
         label, agreement = determine_label(votes_str)
         
         # Build prompt
-        prompt = (f"You are a helpful research assistant. Your task is to predict the label "
-                  f"for an NLI item. Context: {premise}\nStatement: {hypothesis}\n\n"
-                  f"Target label: {label}\n\n[PREDICTION]:")
+        prompt = (f"You will be given a Context and a Statement. A group of annotators were asked to label the relationship between them using the following criteria:\n\n"
+                  f"Assuming the Context is true, the Statement...\n"
+                  f"* ... is most likely true -> entailment\n"
+                  f"* ... could be either true or false -> neutral\n"
+                  f"* ... is most likely false -> contradiction\n\n"
+                  f"Your task is to predict the label that most annotators would assign to this item.\n\n"
+                  f"Please output only a single label 'E', 'N' or 'C', depending on your prediction, after the flag '[PREDICTION]:'.\n\n"
+                  f"[CONTEXT]: {premise}\n"
+                  f"[HYPOTHESIS]: {hypothesis}\n\n"
+                  f"[PREDICTION]:")
         
         entry = {
             "custom_id": f"id{idx}_run1",
@@ -101,11 +112,17 @@ def main():
     parser.add_argument("--max-tokens", type=int, default=100, help="Max tokens")
     args = parser.parse_args()
 
-    input_path = Path("data/CommitmentBank-items.csv")
-    output_path = Path("data/nli_prompt.jsonl")
-    
-    process_data(input_path, output_path, args.model, args.temp, args.reasoning, args.max_tokens)
-    print(f"Successfully processed {input_path} to {output_path}")
+    input_path = Path("data/CB/CommitmentBank-items.csv")
+    save_path = f"data/nli_prompt_{args.model.replace('/', '_')}_temp{args.temp}"
+
+
+    if args.reasoning:
+        save_path += "_reasoning.jsonl"
+    else:
+        save_path += "_no_reasoning.jsonl"
+
+    process_data(input_path, Path(save_path), args.model, args.temp, args.reasoning, args.max_tokens)
+    print(f"Successfully processed {input_path} to {save_path}")
 
 if __name__ == "__main__":
     main()
