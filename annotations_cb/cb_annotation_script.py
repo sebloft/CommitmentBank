@@ -42,10 +42,12 @@ if "data" not in st.session_state:
     if "comments" not in df.columns:
         df["comments"] = None
 
-    # Enforce deterministic order and reset continuous 0-based index
+    # Enforce deterministic order and continuous 0-based index
     df = df.sort_values(by="sample_id").reset_index(drop=True)
 
     st.session_state.data = df
+
+total = len(st.session_state.data)
 
 # 4. Track current index
 if "index" not in st.session_state:
