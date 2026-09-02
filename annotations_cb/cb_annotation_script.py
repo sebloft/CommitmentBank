@@ -31,7 +31,33 @@ if "data" not in st.session_state:
 
     st.session_state.data = df
 
-# 4. Sidebar Download Button (Safe: called after data is initialized)
+total = len(st.session_state.data)
+
+# 4. Track current index
+if "index" not in st.session_state:
+    unlabeled = st.session_state.data[st.session_state.data["labels"].isna()]
+    st.session_state.index = int(unlabeled.index[0]) if not unlabeled.empty else 0
+
+
+# 5. Jump to Sample Controls (Sidebar)
+def on_jump():
+    # Convert 1-based UI number to 0-based index
+    st.session_state.index = st.session_state.jump_input - 1
+
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("Navigation")
+st.sidebar.number_input(
+    label=f"Jump to sample (1 - {total}):",
+    min_value=1,
+    max_value=total,
+    value=st.session_state.index + 1 if st.session_state.index < total else total,
+    key="jump_input",
+    on_change=on_jump,
+)
+
+# 6. Sidebar Download Button
+st.sidebar.markdown("---")
 csv_data = st.session_state.data.to_csv(index=False).encode("utf-8")
 st.sidebar.download_button(
     label="📥 Download Progress CSV",
@@ -40,15 +66,9 @@ st.sidebar.download_button(
     mime="text/csv",
 )
 
-# 5. Track current index
-if "index" not in st.session_state:
-    unlabeled = st.session_state.data[st.session_state.data["labels"].isna()]
-    st.session_state.index = unlabeled.index[0] if not unlabeled.empty else 0
-
 idx = st.session_state.index
-total = len(st.session_state.data)
 
-# 6. Annotation UI
+# 7. Annotation UI
 if idx < total:
     st.write(f"### Sample {idx + 1} of {total}")
     st.progress((idx + 1) / total)
