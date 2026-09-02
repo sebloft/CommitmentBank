@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 
-FILE_PATH = "commitmentbank_samples.csv"
+FILE_PATH = "annotations_cb/commitmentbank_samples.csv"
 # In your sidebar:
 annotator_id = st.sidebar.text_input("Enter your Annotator ID / Name:").strip()
 
