@@ -117,7 +117,6 @@ if idx < total:
             st.rerun()
 
 else:
-    else:
     st.success("All samples processed!")
     st.dataframe(st.session_state.data)
     
